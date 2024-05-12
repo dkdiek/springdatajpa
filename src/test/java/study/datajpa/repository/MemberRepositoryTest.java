@@ -6,6 +6,9 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import study.datajpa.dto.MemberDto;
@@ -143,6 +146,7 @@ public class MemberRepositoryTest {
     }
   }
   
+  @Test
   public void returnType() {
     
     Member m1 = new Member("aaa", 10);
@@ -153,5 +157,23 @@ public class MemberRepositoryTest {
     List<Member> aaa = memberRepository.findListByUsername("AAA");
     Member bbb = memberRepository.findMemberByUsername("bbb");
     Optional<Member> ccc = memberRepository.findOptionalByUsername("bbb");
+  }
+  
+  @Test
+  public void paging(){
+    memberRepository.save(new Member("member1", 10));
+    memberRepository.save(new Member("member2", 10));
+    memberRepository.save(new Member("member3", 10));
+    memberRepository.save(new Member("member4", 10));
+    memberRepository.save(new Member("member5", 10));
+
+    int age = 10;
+    // spring data jpa는 page 0부터 시작 주의
+    PageRequest pageRequest = PageRequest.of(0, 3, Sort.by(Sort.Direction.DESC, "username"));
+    
+    Page<Member> members = memberRepository.findByAge(age, pageRequest);
+
+    members.getContent();
+    members.getTotalElements();
   }
 }
