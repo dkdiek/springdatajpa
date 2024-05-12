@@ -2,11 +2,10 @@ package study.datajpa.repository;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import org.springframework.stereotype.Repository;
-import study.datajpa.entity.Member;
-
 import java.util.List;
 import java.util.Optional;
+import org.springframework.stereotype.Repository;
+import study.datajpa.entity.Member;
 
 @Repository
 public class MemberJpaRepository {
@@ -46,9 +45,4 @@ public class MemberJpaRepository {
         .getResultList();
   }
 
-  public List<Member> findByUsername(String username) {
-    return em.createQuery("Member.findByUsername", Member.class)
-        .setParameter("username", "회원1")
-        .getResultList();
-  }
 }

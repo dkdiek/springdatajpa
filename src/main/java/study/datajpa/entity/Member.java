@@ -14,8 +14,8 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString(of = {"id", "username", "age"}) // team 적으면 연관관계 적어서 출력되서 문제 발생 무한루프 연관관계 필드는 tostring X
 @NamedQuery(
-        name = "Member.findByUsername",
-        query = "select m from Member m where m.username = :username"
+        name="MemberJPQL.findByName",
+        query="select m from Member m where m.username = :username"
 )
 public class Member {
 
