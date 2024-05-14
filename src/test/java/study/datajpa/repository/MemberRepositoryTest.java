@@ -2,6 +2,8 @@ package study.datajpa.repository;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +41,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class MemberRepositoryTest {
   @Autowired MemberRepository memberRepository;
   @Autowired TeamRepository teamRepository;
-
+   @PersistenceContext
+   private final EntityManager em;
+  
+  public MemberRepositoryTest(@Autowired EntityManager em) {
+    this.em = em;
+  }
+  
   @Test
   public void testMember() {
     Member member = new Member("memberA");
@@ -175,5 +183,42 @@ public class MemberRepositoryTest {
 
     members.getContent();
     members.getTotalElements();
+  }
+  
+  @Test
+  public void bulkUpdate() throws Exception {
+//given
+    memberRepository.save(new Member("member1", 10));
+    memberRepository.save(new Member("member2", 19));
+    memberRepository.save(new Member("member3", 20));
+    memberRepository.save(new Member("member4", 21));
+    memberRepository.save(new Member("member5", 40));
+//when
+    int resultCount = memberRepository.bulkAgePlus(20);
+//then
+    assertThat(resultCount).isEqualTo(3);
+  }
+  
+  @Test
+  public void findMemberLazy() throws Exception {
+//given
+//member1 -> teamA
+//member2 -> teamB
+    Team teamA = new Team("teamA");
+    Team teamB = new Team("teamB");
+    teamRepository.save(teamA);
+    teamRepository.save(teamB);
+    memberRepository.save(new Member("member1", 10, teamA));
+    memberRepository.save(new Member("member2", 20, teamB));
+    em.flush();
+    em.clear();
+//when
+    //멤버 가져오는 쿼리만
+    List<Member> members = memberRepository.findAll();
+//then
+    for (Member member : members) {
+      //팀의 내용을 위에서 조회안하고 가짜 껍데기를 가져와서 팀의 정보를 가져오기 위해 팀 조회 쿼리가 실행된다
+      member.getTeam().getName();
+    }
   }
 }
