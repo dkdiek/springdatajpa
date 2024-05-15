@@ -22,7 +22,6 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @Transactional
 @Rollback(value = false)
-
 class MemberTest {
 
   @Autowired MemberRepository memberRepository;
@@ -58,23 +57,22 @@ class MemberTest {
       System.out.println("------------------------------");
     }
   }
-  
+
   @Test
   public void jpaEventBaseEntity() throws Exception {
-//given
+    // given
     Member member = new Member("member1");
-    memberRepository.save(member); //@PrePersist
+    memberRepository.save(member); // @PrePersist
     Thread.sleep(100);
     member.setUsername("member2");
-    em.flush(); //@PreUpdate
+    em.flush(); // @PreUpdate
     em.clear();
-//when
+    // when
     Member findMember = memberRepository.findById(member.getId()).get();
-//then
-    System.out.println("findMember.createdDate = " +
-            findMember.getCreatedDate());
-    System.out.println("findMember.updatedDate = " +
-            findMember.getUpdatedDate());
+    // then
+    System.out.println("findMember.createdDate = " + findMember.getCreatedDate());
+    System.out.println("findMember.updatedDate = " + findMember.getLastModifiedDate());
+    System.out.println("findMember.3 = " + findMember.getCreatedBy());
+    System.out.println("findMember.4 = " + findMember.getLastModifiedBy());
   }
-  
 }
