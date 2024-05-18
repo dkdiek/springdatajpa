@@ -17,7 +17,7 @@ import java.util.Optional;
  *
  * @author : K
  */
-public interface MemberRepository extends JpaRepository<Member, Long>, MemberRepositoryCustom {
+public interface MemberRepository extends JpaRepository<Member, Long>, MemberRepositoryCustom, JpaSpecificationExecutor<Member> {
 
   List<Member> findByUsernameAndAgeGreaterThan(String username, int age);
 
@@ -69,4 +69,13 @@ public interface MemberRepository extends JpaRepository<Member, Long>, MemberRep
   
   @QueryHints(value = @QueryHint(name = "org.hibernate.readOnly", value = "true"))
   Member findReadOnlyByUsername(String username);
+
+  @Query(value = "select * from where username =? ", nativeQuery = true)
+  Member findByNativeQuery(String Username);
+
+  @Query(value =  "select m.member_id as id, m.username, t.name as teamName" +
+          "from member m left join team t",
+          countQuery = "select count(*) from member",
+          nativeQuery = true)
+  Page<MemberProjection> findByNativeProjection(Pageable pageable);
 }
